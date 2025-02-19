@@ -60,7 +60,7 @@ Before configuring, plan how the devices will connect. The diagram typically sho
 
 <img src="https://imgur.com/YourNetworkDiagram.png" alt="Network Diagram" />
 
-Ref 2: Router-on-a-Stick Network Diagram
+*Ref 2: Router-on-a-Stick Network Diagram*
 
 ---
 
@@ -72,7 +72,7 @@ Ref 2: Router-on-a-Stick Network Diagram
 
 <img src="https://imgur.com/YourISPConnection.png" alt="ISP Connection" />
 
-Ref 3: Physical cable from ISP router to Cisco router
+*Ref 3: Physical cable from ISP router to Cisco router*
 
 #### 3.2 Connecting the Router to the Switch
 - FastEthernet 0/1 on the Cisco router → GigabitEthernet 0/48 on the switch (trunk port)  
@@ -80,14 +80,14 @@ Ref 3: Physical cable from ISP router to Cisco router
 
 <img src="https://imgur.com/YourRouterToSwitch.png" alt="Router to Switch" />
 
-Ref 4: Router’s LAN interface to Switch’s trunk port
+*Ref 4: Router’s LAN interface to Switch’s trunk port*
 
 #### 3.3 Console Connection
 - Connect a console cable (RJ45 → USB) from the router’s console port to your PC for CLI access  
 
 <img src="https://imgur.com/YourConsoleConnection.png" alt="Console Cable Setup" />
 
-Ref 5: Console cable for CLI access
+*Ref 5: Console cable for CLI access*
 
 ---
 
@@ -97,16 +97,17 @@ Ref 5: Console cable for CLI access
 ```bash
 enable
 show ip interface brief
+```
 
 Shows the current status and IP addresses of interfaces
+
 <img src="https://imgur.com/YourShowIPInt.png" alt="Show IP Interface Brief" />
-Ref 6: Confirming interface statuses
+
+*Ref 6: Confirming interface statuses*
 
 #### 4.2 Configure WAN (FastEthernet 0/0)
 
 ```bash
-Copy
-Edit
 configure terminal
 interface fastethernet 0/0
 ip address dhcp
@@ -123,8 +124,6 @@ WAN interface obtains an IP from the ISP router via DHCP
 #### 4.3 Default Route & Ping
 
 ```bash
-Copy
-Edit
 configure terminal
 ip route 0.0.0.0 0.0.0.0 192.168.1.1
 exit
@@ -141,35 +140,31 @@ Set the default route toward your ISP gateway, then test connectivity
 ### 5. VLAN and Subinterface Configuration
 #### 5.1 Create VLAN Subinterfaces
 ```bash
-Copy
-Edit
+
 interface fastethernet 0/1.10
 encapsulation dot1q 10
 ip address 10.10.10.1 255.255.255.0
 no shutdown
 exit
-```
-```bash
-Copy
-Edit
+
 interface fastethernet 0/1.20
 encapsulation dot1q 20
 ip address 10.10.20.1 255.255.255.0
 no shutdown
 exit
-```
-```bash
-Copy
-Edit
+
 interface fastethernet 0/1.30
 encapsulation dot1q 30
 ip address 10.10.30.1 255.255.255.0
 no shutdown
 exit
 ```
+
 These subinterfaces allow the router to route between VLANs 10, 20, and 30 on a single physical interface
+
 <img src="https://imgur.com/YourSubinterfaces.png" alt="Subinterface Configuration" />
-Ref 9: Router-on-a-Stick subinterfaces
+
+*Ref 9: Router-on-a-Stick subinterfaces*
 
 ---
 
@@ -186,8 +181,7 @@ network 10.10.10.0 255.255.255.0
 default-router 10.10.10.1
 dns-server 8.8.8.8
 exit
-```
-```bash
+
 ip dhcp pool VLAN20
 network 10.10.20.0 255.255.255.0
 default-router 10.10.20.1
@@ -203,13 +197,13 @@ exit
 
 <img src="https://imgur.com/YourDHCPSetup.png" alt="DHCP Configuration" />
 
-Ref 10: Router acting as DHCP server
+*Ref 10: Router acting as DHCP server*
 
 ### 7. NAT Configuration (For Internet Access)
 
 To allow VLANs to access the internet:
 
-Mark WAN as outside, subinterfaces as inside:
+1. Mark WAN as outside, subinterfaces as inside:
 
 ```bash
 Copy
@@ -217,54 +211,50 @@ Edit
 interface fastethernet 0/0
 ip nat outside
 exit
-```
-bash```
+
 interface fastethernet 0/1.10
 ip nat inside
 exit
-```
 
-bash```
 interface fastethernet 0/1.20
 ip nat inside
 exit
-```
-bash```
+
 interface fastethernet 0/1.30
 ip nat inside
 exit
 ```
-Create an ACL for inside networks and apply NAT overload:
+2. Create an ACL for inside networks and apply NAT overload:
 
 ```bash
-Copy
-Edit
 ip access-list standard LOCAL
 permit 10.10.10.0 0.0.0.255
 permit 10.10.20.0 0.0.0.255
 permit 10.10.30.0 0.0.0.255
 exit
-```
 
 ip nat inside source list LOCAL interface fastethernet 0/0 overload
+```
+
 <img src="https://imgur.com/YourNATConfig.png" alt="NAT Configuration" />
-Ref 11: NAT Overload for internet access
+
+*Ref 11: NAT Overload for internet access*
 
 ---
 
 ### 8. Switch Configuration
 #### 8.1 Configure Trunk Port
 ```bash
-Copy
-Edit
 interface gigabitEthernet 0/48
 switchport mode trunk
 no shutdown
 exit
 ```
-This port carries VLAN 10, 20, and 30 traffic to the router
+- This port carries VLAN 10, 20, and 30 traffic to the router
+  
 <img src="https://imgur.com/YourSwitchTrunk.png" alt="Switch Trunk Port" />
-Ref 12: Trunk port configuration
+
+*Ref 12: Trunk port configuration*
 
 #### 8.2 Create and Assign VLANs
 ```bash
@@ -276,7 +266,6 @@ vlan 20
 exit
 vlan 30
 exit
-
 
 interface range gigabitEthernet 0/1-16
 switchport mode access
@@ -293,36 +282,38 @@ switchport mode access
 switchport access vlan 30
 exit
 ```
+
 <img src="https://imgur.com/YourVLANAssign.png" alt="VLAN Assignment" />
-Ref 13: Access port assignment to respective VLANs
+
+*Ref 13: Access port assignment to respective VLANs*
 
 
 ---
 
-9. Testing & Verification
-9.1 Check VLAN Connectivity
-From a VLAN 10 device, ping 10.10.10.1
-From a VLAN 20 device, ping 10.10.20.1
-From a VLAN 30 device, ping 10.10.30.1
+### 9. Testing & Verification
+
+#### 9.1 Check VLAN Connectivity
+- From a VLAN 10 device, ping 10.10.10.1
+- From a VLAN 20 device, ping 10.10.20.1
+- From a VLAN 30 device, ping 10.10.30.1
+
 <img src="https://imgur.com/YourPingTest.png" alt="Ping Gateways" />
-Ref 14: Ensuring gateway reachability in each VLAN
 
-9.2 Verify DHCP
-End devices should receive IP addresses in their respective VLAN subnets (e.g., 10.10.10.x)
-9.3 Test Internet Access
-Attempt to browse or ping an external IP/URL (e.g., ping 8.8.8.8)
+*Ref 14: Ensuring gateway reachability in each VLAN*
+
+#### 9.2 Verify DHCP
+- End devices should receive IP addresses in their respective VLAN subnets (e.g., 10.10.10.x)
+  
+#### 9.3 Test Internet Access
+- Attempt to browse or ping an external IP/URL (e.g., ping 8.8.8.8)
+
 <img src="https://imgur.com/YourInternetTest.png" alt="Internet Test" />
-Ref 15: Confirming successful NAT and internet access
+
+*Ref 15: Confirming successful NAT and internet access*
 
 ---
 
-Conclusion
+### Conclusion
 By resetting the router in ROMMON mode, creating subinterfaces for each VLAN, configuring DHCP and NAT, and assigning VLANs on the switch, we achieved inter-VLAN routing and internet access. This Router-on-a-Stick architecture provides efficient segmentation, easy expandability, and centralized control of multiple subnets—all on a single physical router interface.
 
-This project further refined skills in:
 
-Basic and advanced Cisco CLI commands
-Layer 2 (VLAN) and Layer 3 (routing) configurations
-DHCP, NAT, and ACL fundamentals
-Troubleshooting connectivity and verifying traffic flows
-Feel free to drag and drop or reference screenshots in each step to illustrate your process!
