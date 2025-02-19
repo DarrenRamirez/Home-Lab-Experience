@@ -256,8 +256,6 @@ exit
 
 #### 8.2 Create and Assign VLANs
 ```bash
-Copy
-Edit
 vlan 10
 exit
 vlan 20
