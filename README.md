@@ -12,7 +12,7 @@ This project demonstrates how to configure a Cisco router and switch using the R
 
 ### Tools Used
 - Cisco 2800 Series Router (or similar)  
-- Cisco 2900 Series Switch (or similar)  
+- Cisco 3550 Series Switch (or similar)  
 - Console Cable (RJ45 to USB) for CLI access  
 - ISP Router (for internet connectivity)  
 - Terminal Emulator (PuTTY, SecureCRT, Tera Term, etc.)  
@@ -21,12 +21,13 @@ This project demonstrates how to configure a Cisco router and switch using the R
 
 ## Steps
 
-Drag & drop screenshots here or reference them from an image host (e.g., Imgur). Each screenshot should have text explaining what it shows.
-
-Example Below
-
 ### 1. Resetting the Router Using ROMMON Mode
 If the router has an existing configuration and you need to factory reset it:
+
+<img src="https://imgur.com/335EqTh.png" alt="Imgur Image" />
+
+*Ref 1a: Old password I dont know*
+
 
 1. Enter ROMMON Mode  
    - Power cycle the router and press `Ctrl + Break` as it boots.  
@@ -37,6 +38,7 @@ If the router has an existing configuration and you need to factory reset it:
      ```
    - This tells the router to skip the old configuration at next boot.
 
+
 2. Erase Old Configuration  
    - After the router reboots, enter privileged mode:
      ```bash
@@ -46,9 +48,9 @@ If the router has an existing configuration and you need to factory reset it:
      ```
    - The router will then restart without any previous settings.
 
-<img src="https://imgur.com/YourImageHere.png" alt="Imgur Image" />
+<img src="https://imgur.com/zSIspGS.png" alt="Imgur Image" />
 
-Ref 1: Resetting the router in ROMMON mode
+*Ref 1b: Resetting the router in ROMMON mode*
 
 ---
 
@@ -58,9 +60,9 @@ Before configuring, plan how the devices will connect. The diagram typically sho
 - Cisco Router (LAN on FastEthernet 0/1) → Switch (trunk port)  
 - End devices on VLAN 10, 20, 30 access ports on the switch  
 
-<img src="https://imgur.com/YourNetworkDiagram.png" alt="Network Diagram" />
+<img src="https://imgur.com/a1VrJPH.png" alt="Network Diagram" />
 
-*Ref 2: Router-on-a-Stick Network Diagram*
+*Ref 2: Router Network Diagram*
 
 ---
 
@@ -70,22 +72,22 @@ Before configuring, plan how the devices will connect. The diagram typically sho
 - FastEthernet 0/0 on the Cisco router → ISP Router LAN port  
 - This port will obtain an IP address via DHCP from the ISP router  
 
-<img src="https://imgur.com/YourISPConnection.png" alt="ISP Connection" />
+<img src="https://imgur.com/DCmKsH5.png" alt="ISP Connection" />
 
 *Ref 3: Physical cable from ISP router to Cisco router*
 
 #### 3.2 Connecting the Router to the Switch
-- FastEthernet 0/1 on the Cisco router → GigabitEthernet 0/48 on the switch (trunk port)  
+- GigabitEthernet 0/1 on the Cisco router → GigabitEthernet 0/1 on the switch (trunk port)  
 - This trunk will carry multiple VLANs between the router and switch  
 
-<img src="https://imgur.com/YourRouterToSwitch.png" alt="Router to Switch" />
+<img src="https://imgur.com/7lMQsEu.png" alt="Router to Switch" />
 
 *Ref 4: Router’s LAN interface to Switch’s trunk port*
 
 #### 3.3 Console Connection
 - Connect a console cable (RJ45 → USB) from the router’s console port to your PC for CLI access  
 
-<img src="https://imgur.com/YourConsoleConnection.png" alt="Console Cable Setup" />
+<img src="https://imgur.com/DWGNL5c.png" alt="Console Cable Setup" />
 
 *Ref 5: Console cable for CLI access*
 
@@ -101,15 +103,15 @@ show ip interface brief
 
 Shows the current status and IP addresses of interfaces
 
-<img src="https://imgur.com/YourShowIPInt.png" alt="Show IP Interface Brief" />
+<img src="https://imgur.com/GhXpidJ.png" alt="Show IP Interface Brief" />
 
 *Ref 6: Confirming interface statuses*
 
-#### 4.2 Configure WAN (FastEthernet 0/0)
+#### 4.2 Configure WAN (gigabitEthernet 0/0)
 
 ```bash
 configure terminal
-interface fastethernet 0/0
+interface gigabitEthernet 0/0
 ip address dhcp
 no shutdown
 exit
@@ -117,7 +119,7 @@ exit
 
 WAN interface obtains an IP from the ISP router via DHCP
 
-<img src="https://imgur.com/YourWANConfig.png" alt="WAN Configuration" />
+<img src="https://imgur.com/cPAzfFR.png" alt="WAN Configuration" />
 
 *Ref 7: WAN interface set to DHCP*
 
@@ -125,13 +127,13 @@ WAN interface obtains an IP from the ISP router via DHCP
 
 ```bash
 configure terminal
-ip route 0.0.0.0 0.0.0.0 192.168.1.1
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
 exit
-ping 192.168.1.1
+ping 10.0.0.1
 ```
 Set the default route toward your ISP gateway, then test connectivity
 
-<img src="https://imgur.com/YourPingTest.png" alt="Ping Test to ISP Router" />
+<img src="https://imgur.com/wWl0orN.png" alt="Ping Test to ISP Router" />
 
 *Ref 8: Verifying internet connectivity*
 
@@ -162,7 +164,7 @@ exit
 
 These subinterfaces allow the router to route between VLANs 10, 20, and 30 on a single physical interface
 
-<img src="https://imgur.com/YourSubinterfaces.png" alt="Subinterface Configuration" />
+<img src="https://imgur.com/dWrZcpA.png" alt="Subinterface Configuration" />
 
 *Ref 9: Router-on-a-Stick subinterfaces*
 
@@ -172,8 +174,6 @@ These subinterfaces allow the router to route between VLANs 10, 20, and 30 on a 
 To assign IP addresses automatically:
 
 ```bash
-Copy
-Edit
 configure terminal
 
 ip dhcp pool VLAN10
@@ -195,7 +195,7 @@ dns-server 8.8.8.8
 exit
 ```
 
-<img src="https://imgur.com/YourDHCPSetup.png" alt="DHCP Configuration" />
+<img src="https://imgur.com/FYtqqRB.png" alt="DHCP Configuration" />
 
 *Ref 10: Router acting as DHCP server*
 
@@ -206,8 +206,6 @@ To allow VLANs to access the internet:
 1. Mark WAN as outside, subinterfaces as inside:
 
 ```bash
-Copy
-Edit
 interface fastethernet 0/0
 ip nat outside
 exit
@@ -236,7 +234,7 @@ exit
 ip nat inside source list LOCAL interface fastethernet 0/0 overload
 ```
 
-<img src="https://imgur.com/YourNATConfig.png" alt="NAT Configuration" />
+<img src="https://imgur.com/5wiroxg.png" alt="NAT Configuration" />
 
 *Ref 11: NAT Overload for internet access*
 
@@ -283,7 +281,7 @@ switchport access vlan 30
 exit
 ```
 
-<img src="https://imgur.com/YourVLANAssign.png" alt="VLAN Assignment" />
+<img src="https://imgur.com/1yuEHNL.png" alt="VLAN Assignment" />
 
 *Ref 13: Access port assignment to respective VLANs*
 
